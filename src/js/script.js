@@ -60,9 +60,10 @@
       thisProduct.data = data;
 
       thisProduct.renderInMenu();
-      console.log('new Product: ', thisProduct);
-
+      thisProduct.getElements();
       thisProduct.initAccordion();
+      thisProduct.initOrderForm();
+      thisProduct.processOrder();
 
     }
 
@@ -81,35 +82,100 @@
       /* add element to menu */
       menuContainer.appendChild(thisProduct.element);
     }
+
+    getElements(){
+      const thisProduct = this;
+    
+      thisProduct.accordionTrigger = thisProduct.element.querySelector(select.menuProduct.clickable);
+      thisProduct.form = thisProduct.element.querySelector(select.menuProduct.form);
+      thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
+      thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
+      thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+    }
     
     initAccordion(){
       const thisProduct = this;
   
       /* find the clickable trigger (the element that should react to clicking) */
-      const clickableTrigger = this.element.querySelector(select.menuProduct.clickable);
-      console.log('clickableTrigger: ', clickableTrigger);
+      //const clickableTrigger = this.element.querySelector(select.menuProduct.clickable);
   
       /* START: add event listener to clickable trigger on event click */
-      clickableTrigger.addEventListener('click', function(event) {
+      thisProduct.accordionTrigger.addEventListener('click', function(event) {
         /* prevent default action for event */
         event.preventDefault();
 
         /* find active product (product that has active class) */
         const activeProduct = document.querySelector('article.active');
-        console.log('activePRODUCT: ', activeProduct);
   
         /* if there is active product and it's not thisProduct.element, remove class active from it */
         if(activeProduct != null && activeProduct != thisProduct.element){
           activeProduct.classList.remove('active');
-          console.log('removed');
         }
         /* toggle active class on thisProduct.element */
         thisProduct.element.classList.toggle('active');
       });
     }
 
+    initOrderForm(){
+      const thisProduct = this;
+      console.log('ThisProduct',thisProduct);
 
+      thisProduct.form.addEventListener('submit', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+      
+      for(let input of thisProduct.formInputs){
+        input.addEventListener('change', function(){
+          thisProduct.processOrder();
+        });
+      }
+      
+      thisProduct.cartButton.addEventListener('click', function(event){
+        event.preventDefault();
+        thisProduct.processOrder();
+      });
+    }
+
+    processOrder(){
+      const thisProduct = this;
+      console.log('processOrder',thisProduct);
+
+      const formData = utils.serializeFormToObject(thisProduct.form);
+      console.log('formData', formData);
+
+        // set price to default price
+      let price = thisProduct.data.price;
+      
+      // for every category (param)...
+      for(let paramId in thisProduct.data.params) {
+        // determine param value, e.g. paramId = 'toppings', param = { label: 'Toppings', type: 'checkboxes'... }
+        const param = thisProduct.data.params[paramId];
+        console.log(paramId, param);
+
+        // for every option in this category
+        for(let optionId in param.options) {
+          // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
+          const option = param.options[optionId];
+          //console.log('OPTIONID and OPTION: ', optionId, option);
+          if(formData[paramId] && formData[paramId].includes(optionId)){
+            if(option.default != true){
+              // add option price to price variable
+              price = price + option.price;
+            }
+          }else{
+            if(option.default == true){
+              price = price - option.price;}   
+          }
+        } 
+      }
+
+      // update calculated price in the HTML
+      thisProduct.priceElem.innerHTML = price;
+    }
     
+
+
 
   }
   
