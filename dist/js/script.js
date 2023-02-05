@@ -91,6 +91,7 @@
       thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
       thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
     }
     
     initAccordion(){
@@ -139,10 +140,10 @@
 
     processOrder(){
       const thisProduct = this;
-      console.log('processOrder',thisProduct);
+      //console.log('processOrder',thisProduct);
 
       const formData = utils.serializeFormToObject(thisProduct.form);
-      console.log('formData', formData);
+      //console.log('formData', formData);
 
         // set price to default price
       let price = thisProduct.data.price;
@@ -151,7 +152,7 @@
       for(let paramId in thisProduct.data.params) {
         // determine param value, e.g. paramId = 'toppings', param = { label: 'Toppings', type: 'checkboxes'... }
         const param = thisProduct.data.params[paramId];
-        console.log(paramId, param);
+        //console.log(paramId, param);
 
         // for every option in this category
         for(let optionId in param.options) {
@@ -162,12 +163,22 @@
             if(option.default != true){
               // add option price to price variable
               price = price + option.price;
+              
             }
           }else{
             if(option.default == true){
-              price = price - option.price;}   
+              price = price - option.price;}
+          }
+          const addProduct = thisProduct.imageWrapper.querySelector( '.' + paramId + '-' + optionId)
+          if (addProduct != null){
+            if(formData[paramId] && formData[paramId].includes(optionId)){
+              addProduct.classList.add(classNames.menuProduct.imageVisible);
+            } else{
+              addProduct.classList.remove(classNames.menuProduct.imageVisible);
+            }
           }
         } 
+        
       }
 
       // update calculated price in the HTML
