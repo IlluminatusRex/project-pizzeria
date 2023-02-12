@@ -278,7 +278,7 @@
           const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
     
           if(optionSelected) {
-            params[paramId].options = formData[paramId]; //DLACZEGO SKŁADNIKI PIZZY NIE SĄ PRAWIDŁOWO UŁOŻONE, A KAWA DZIAŁA POPRAWNIE?
+            params[paramId].options[paramId] = option.label; //DLACZEGO SKŁADNIKI PIZZY NIE SĄ PRAWIDŁOWO UŁOŻONE, A KAWA DZIAŁA POPRAWNIE? - [EDIT]: FIXED
             
           }
         }
@@ -393,8 +393,25 @@
         const generateDOM = utils.createDOMFromHTML(generateHTML);
        
         thisCart.dom.productList.appendChild(generateDOM);
+
+        //thisCart.products.push(menuProduct);
+        //console.log('thisCart.products', thisCart.products);
     }
 
+  }
+
+  
+  class cartProduct {
+    constructor(element){
+      const thisCartProduct = this;
+
+      thisCartProduct.dom = {};
+
+      thisCartProduct.dom.getElements(element);
+      
+      //console.log('new Cart', thisCart);
+
+    }
   }
 
   const app = {
