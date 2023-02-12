@@ -394,7 +394,7 @@
        
         thisCart.dom.productList.appendChild(generateDOM);
 
-        //thisCart.products.push(menuProduct);
+        thisCart.products.push(new cartProduct(menuProduct, generateDOM));
         //console.log('thisCart.products', thisCart.products);
     }
 
@@ -402,16 +402,34 @@
 
   
   class cartProduct {
-    constructor(element){
+    constructor(menuProduct, element){
       const thisCartProduct = this;
 
-      thisCartProduct.dom = {};
-
-      thisCartProduct.dom.getElements(element);
+      thisCartProduct.id = menuProduct.id;
+      thisCartProduct.name = menuProduct.name;
+      thisCartProduct.amount = menuProduct.amount;
+      thisCartProduct.priceSingle = menuProduct.priceSingle;
+      thisCartProduct.price = menuProduct.price;
       
-      //console.log('new Cart', thisCart);
+      thisCartProduct.getElements(element);
+      console.log('thisCartProduct: ', thisCartProduct);
 
     }
+      
+    getElements(element){
+      const thisCartProduct = this;
+  
+      thisCartProduct.dom = {};
+      
+      
+      thisCartProduct.dom.amountWidget = element.querySelector(select.cartProduct.amountWidget);  //czemu nie znajduje?
+      thisCartProduct.dom.price = element.querySelector(select.cartProduct.price);
+      thisCartProduct.dom.edit = element.querySelector(select.cartProduct.edit);
+      thisCartProduct.dom.remove = element.querySelector(select.cartProduct.remove);
+
+      thisCartProduct.dom.wrapper = element;
+    }
+
   }
 
   const app = {
