@@ -384,6 +384,10 @@
       thisCart.dom.productList.addEventListener('updated', function () {
         thisCart.update();
       });
+
+      thisCart.dom.productList.addEventListener('remove', function (event) {
+        thisCart.remove(event.detail.cartProduct);
+      });
     }
 
     add(menuProduct){
@@ -402,7 +406,7 @@
 
     update(){
       const thisCart = this;
-      const deliveryFee = settings.cart.defaultDeliveryFee;
+      let deliveryFee = settings.cart.defaultDeliveryFee;
 
       let totalNumber = 0;
       let subtotalPrice = 0;
@@ -417,9 +421,16 @@
       }
       if (thisCart.subtotalPrice != 0) {
         totalPrice = subtotalPrice + deliveryFee;
+        
       } else {
         totalPrice = 0;
       }
+
+      if(subtotalPrice == 0){
+        totalPrice = 0;
+        deliveryFee = 0;
+      }
+
 
       console.log('totalNumber: ', totalNumber, 'subtotalPrice: ', subtotalPrice, 'totalPrice: ', totalPrice);
       thisCart.dom.totalNumber.innerHTML = totalNumber;
@@ -427,12 +438,23 @@
       thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
       thisCart.dom.totalPrice.innerHTML = totalPrice;
       thisCart.dom.totalPrice2.innerHTML = totalPrice;
-      
     }
+
+    remove(event) {
+      const thisCart = this;
+      event.dom.wrapper.remove();
+      /* check where product is in array */
+      const productToRemove = thisCart.products.indexOf(event);
+      /* Remove product */
+      thisCart.products.splice(productToRemove, 1);
+
+      thisCart.update();
+    }
+
+
+
   }
 
-
-  
   class cartProduct {
     constructor(menuProduct, element){
       const thisCartProduct = this;
@@ -445,6 +467,7 @@
       
       thisCartProduct.getElements(element);
       thisCartProduct.initAmountWidget();
+      thisCartProduct.initActions();
     }
       
     getElements(element){
@@ -472,6 +495,31 @@
       });
     }
 
+    remove(){
+      const thisCartProduct = this;
+
+      const event = new CustomEvent('remove', {
+        bubbles: true,
+        detail: {
+          cartProduct: thisCartProduct,
+        },
+      });
+
+      thisCartProduct.dom.wrapper.dispatchEvent(event);
+    }
+
+    initActions(){
+      const thisCartProduct = this;
+
+      thisCartProduct.dom.edit.addEventListener('click', function (event) {
+        event.preventDefault();
+      });
+
+      thisCartProduct.dom.remove.addEventListener('click', function (event) {
+        event.preventDefault();
+        thisCartProduct.remove();
+      });
+    }
 
   }
 
