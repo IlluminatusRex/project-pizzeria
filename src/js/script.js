@@ -76,6 +76,12 @@
     cart: {
       defaultDeliveryFee: 20,
     },
+
+    db: {
+      url: '//localhost:3131',
+      products: 'products',
+      orders: 'orders',
+    },
   };
 
   const templates = {
@@ -133,7 +139,7 @@
       
       
       thisProduct.amountWidget = new amountWidget(thisProduct.amountWidget);
-      thisProduct.amountWidget.element.addEventListener('updated', function(event) {
+      thisProduct.amountWidget.element.addEventListener('updated', function() {
         //event.preventDefault();
         thisProduct.processOrder();
       });
@@ -190,7 +196,7 @@
       const formData = utils.serializeFormToObject(thisProduct.form);
       //console.log('formData', formData);
 
-        // set price to default price
+      // set price to default price
       let price = thisProduct.data.price;
             
       // for every category (param)...
@@ -214,7 +220,7 @@
             if(option.default == true){
               price = price - option.price;}
           }
-          const addProduct = thisProduct.imageWrapper.querySelector( '.' + paramId + '-' + optionId)
+          const addProduct = thisProduct.imageWrapper.querySelector( '.' + paramId + '-' + optionId);
           if (addProduct != null){
             if(formData[paramId] && formData[paramId].includes(optionId)){
               addProduct.classList.add(classNames.menuProduct.imageVisible);
@@ -267,7 +273,7 @@
         params[paramId] = {
           label: param.label,
           options: {}
-        }
+        };
     
         // for every option in this category
         for(let optionId in param.options) {
@@ -393,15 +399,15 @@
     add(menuProduct){
       const thisCart = this;
 
-        const generateHTML = templates.cartProduct(menuProduct);
+      const generateHTML = templates.cartProduct(menuProduct);
   
-        const generateDOM = utils.createDOMFromHTML(generateHTML);
+      const generateDOM = utils.createDOMFromHTML(generateHTML);
        
-        thisCart.dom.productList.appendChild(generateDOM);
+      thisCart.dom.productList.appendChild(generateDOM);
 
-        thisCart.products.push(new cartProduct(menuProduct, generateDOM));
-        //console.log('thisCart.products', thisCart.products);
-        thisCart.update();
+      thisCart.products.push(new cartProduct(menuProduct, generateDOM));
+      //console.log('thisCart.products', thisCart.products);
+      thisCart.update();
     }
 
     update(){
@@ -528,7 +534,7 @@
       const thisApp = this;
 
       for(let productData in thisApp.data.products){
-        new Product(productData, thisApp.data.products[productData]);
+        new Product(thisApp.data.products[productData].id, thisApp.data.products[productData]);
       }
     },
 
@@ -543,14 +549,24 @@
       */
 
       thisApp.initData();
-      thisApp.initMenu();
       thisApp.initCart();
     },
 
     initData: function(){
       const thisApp = this;
 
-      thisApp.data = dataSource;
+      thisApp.data = {};
+      const url = settings.db.url + '/' + settings.db.products;
+
+      fetch(url)
+        .then(function(rawResponse){
+          return rawResponse.json();
+        })
+        .then(function(parsedResponse){
+          console.log('parsedResponse', parsedResponse);
+          thisApp.data.products = parsedResponse;
+          thisApp.initMenu();
+        });
     },
 
     initCart: function(){
