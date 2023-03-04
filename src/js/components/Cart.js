@@ -1,4 +1,4 @@
-import { settings, select, templates } from '../settings.js';
+import {settings, select, templates} from '../settings.js';
 import cartProduct from './CartProduct.js';
 import utils from '../utils.js';
 
@@ -54,7 +54,7 @@ class Cart {
 
   sendOrder(){
     const thisCart = this;
-    const url = settings.db.url + '/' + settings.db.orders;
+    const url = settings.db.url + '/' + settings.db.order;
     console.log('thisCart.dom.totalNumber.value ', thisCart.dom.totalNumber.innerHTML);
     const payload = {
       address: thisCart.dom.address.value,
@@ -106,7 +106,6 @@ class Cart {
     let totalPrice = 0;
 
     console.log('deliveryFee', deliveryFee);
-
 
     for (let product of thisCart.products) {
       totalNumber += product.amount;
