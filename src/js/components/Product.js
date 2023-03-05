@@ -48,10 +48,11 @@ class Product {
     const thisProduct = this;   
     
     thisProduct.amountWidget = new amountWidget(thisProduct.amountWidget);
-    thisProduct.amountWidget.element.addEventListener('updated', function() {
+    /*thisProduct.amountWidget.element.addEventListener('updated', function() {
     //event.preventDefault();
       thisProduct.processOrder();
     });
+    */
   }
     
   initAccordion(){
