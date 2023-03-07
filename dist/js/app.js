@@ -2,15 +2,18 @@ import { settings, select, classNames } from './settings.js';
 import Product from './components/Product.js';
 import Cart from './components/Cart.js';
 import Booking from './components/Booking.js';
+import Home from './components/home.js';
 
 const app = {
   initPages: function(){
     const thisApp = this;
     thisApp.pages = document.querySelector(select.containerOf.pages).children;
     thisApp.navLinks = document.querySelectorAll(select.nav.links);
-
+    thisApp.homeLinks = document.querySelectorAll(select.nav.homelinks);
+    
+    //console.log('pages',thisApp.pages);
     const idFromHash = window.location.hash.replace('#/', '');
-    let pageMatchingHash = thisApp.pages[0].id;
+    let pageMatchingHash = thisApp.pages[2].id;
 
     for(let page of thisApp.pages){
       if(page.id == idFromHash){
@@ -49,8 +52,10 @@ const app = {
     // add class "active" to matching links, remove from non-matching
     for(let link of thisApp.navLinks){
       link.classList.toggle(classNames.nav.active, link.getAttribute('href') == '#' + pageId);
+      
     }
-
+    
+    
   },
 
 
@@ -70,19 +75,34 @@ const app = {
 
   },
 
+  
+  initHome: function(){
+    const thisApp = this;
+    thisApp.homeCntr = document.querySelector(select.containerOf.home);
+    thisApp.home = new Home(thisApp.homeCntr);
+
+    thisApp.homeLinks = document.getElementById('booking-home');
+    thisApp.homeLinks.addEventListener('click', function(event){
+      event.preventDefault();
+      thisApp.activatePage('booking');
+    });
+
+    thisApp.homeLinks = document.getElementById('order-home');
+    thisApp.homeLinks.addEventListener('click', function(event){
+      event.preventDefault();
+      thisApp.activatePage('order');
+    });
+
+  },
+
   init: function(){
     const thisApp = this;
-    /*
-      console.log('*** App starting ***');
-      console.log('thisApp:', thisApp);
-      console.log('classNames:', classNames);
-      console.log('settings:', settings);
-      console.log('templates:', templates);
-      */
+
     thisApp.initPages();
     thisApp.initData();
     thisApp.initCart();
     thisApp.initBooking();
+    thisApp.initHome(); 
   },
 
   initData: function(){
@@ -96,7 +116,7 @@ const app = {
         return rawResponse.json();
       })
       .then(function(parsedResponse){
-        console.log('parsedResponse', parsedResponse);
+        //console.log('parsedResponse', parsedResponse);
         thisApp.data.products = parsedResponse;
         thisApp.initMenu();
       });
