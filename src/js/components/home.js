@@ -32,6 +32,7 @@ class Home{
       cellAlign: 'left',
       contain: true
     });
+    console.log('flickity', flickity);
   
   }
 }
